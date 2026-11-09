@@ -1,0 +1,480 @@
+/* ==========================================================
+   FREELANCE.CSS — Dedicated Freelancing Sub-Site Styles
+   portfolio.beerstudios.org/freelance/
+   ========================================================== */
+
+/* === Header Adjustments === */
+.freelance-hud-logo-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-yellow);
+  border: 1px solid var(--accent-yellow);
+  padding: 2px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.freelance-theme-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-yellow);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* === Freelance Hero === */
+.freelance-hero {
+  padding-block: var(--sp-12) var(--sp-8);
+  border-bottom: 1px solid var(--border);
+}
+
+.freelance-hero-inner {
+  max-width: 820px;
+}
+
+.freelance-hero-title {
+  font-size: clamp(1.85rem, 3.5vw + 0.75rem, 3.25rem);
+  line-height: 1.15;
+  color: var(--accent-yellow);
+  margin-bottom: 16px;
+}
+
+.freelance-hero-lead {
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  color: var(--text);
+  max-width: 64ch;
+  margin-bottom: 24px;
+}
+
+.freelance-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* === Service Board (Migrated & Decoupled from Portfolio) === */
+.section-services {
+  position: relative;
+  background: var(--bg);
+  padding-block: var(--sp-12);
+}
+
+.services-header {
+  margin-bottom: 28px;
+}
+
+.services-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-deep);
+  border: 1px solid var(--accent-yellow);
+  color: var(--accent-yellow);
+  margin-bottom: 12px;
+}
+
+.services-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-yellow);
+  box-shadow: 0 0 8px var(--accent-yellow);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.services-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-chip);
+  color: var(--muted);
+}
+
+.services-meta-strip strong {
+  color: var(--text);
+}
+
+.services-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0 var(--shadow-pixel);
+  padding: 24px;
+  position: relative;
+  transition: transform var(--dur-fast) ease,
+              box-shadow var(--dur-fast) ease,
+              border-color var(--dur-fast) ease,
+              opacity var(--dur-fast) ease;
+}
+
+.service-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-pixel);
+  border-color: var(--border-strong);
+}
+
+.service-card.is-highlighted {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 0 2px var(--accent-yellow), 6px 6px 0 var(--shadow-pixel);
+}
+
+.service-card[data-track="gameplay"].is-highlighted {
+  border-color: var(--track-gameplay);
+  box-shadow: 0 0 0 2px var(--track-gameplay), 6px 6px 0 var(--shadow-pixel);
+}
+
+.service-card[data-track="systems"].is-highlighted {
+  border-color: var(--track-systems);
+  box-shadow: 0 0 0 2px var(--track-systems), 6px 6px 0 var(--shadow-pixel);
+}
+
+.service-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-code {
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.service-track-tag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.service-card[data-track="gameplay"] .service-track-tag {
+  background: rgba(179, 136, 255, 0.15);
+  color: var(--track-gameplay);
+  border: 1px solid var(--track-gameplay);
+}
+
+.service-card[data-track="systems"] .service-track-tag {
+  background: rgba(110, 231, 160, 0.15);
+  color: var(--track-systems);
+  border: 1px solid var(--track-systems);
+}
+
+.service-card-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.35;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.service-card-tagline {
+  font-family: var(--font-mono);
+  font-size: var(--fs-chip);
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+}
+
+.service-card-hook {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text);
+  margin-bottom: 16px;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 2px solid var(--border-strong);
+}
+
+.service-deliverables-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.service-deliverables-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-deliverables-list li {
+  font-size: var(--fs-body-sm);
+  line-height: 1.45;
+  color: var(--text);
+  position: relative;
+  padding-left: 18px;
+}
+
+.service-deliverables-list li::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 9px;
+  color: var(--accent-yellow);
+}
+
+.service-proof-section {
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  margin-top: auto;
+}
+
+.service-proof-title {
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.service-proof-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.service-proof-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  font-size: var(--fs-chip);
+  font-family: var(--font-mono);
+  color: var(--text);
+  text-decoration: none;
+  padding: 6px 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  transition: all var(--dur-fast) ease;
+}
+
+.service-proof-link:hover {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+  transform: translateX(2px);
+  text-decoration: none;
+}
+
+.service-proof-file {
+  color: var(--accent-cyan);
+  font-size: 11px;
+  text-align: right;
+}
+
+.service-card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.service-scope-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-chip);
+  color: var(--muted);
+}
+
+.service-scope-meta strong {
+  color: var(--accent-yellow);
+  font-weight: 500;
+}
+
+.service-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* === Capabilities Matrix === */
+.section-capabilities {
+  padding-block: var(--sp-12);
+  border-top: 1px solid var(--border);
+}
+
+.capabilities-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .capabilities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.capability-card {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-left-width: 4px;
+  box-shadow: 4px 4px 0 var(--shadow-pixel);
+  padding: 20px 22px;
+}
+
+.capability-card[data-track="gameplay"] {
+  border-left-color: var(--track-gameplay);
+}
+
+.capability-card[data-track="systems"] {
+  border-left-color: var(--track-systems);
+}
+
+.capability-card h3 {
+  font-size: 1.05rem;
+  color: var(--accent-yellow);
+  margin-bottom: 8px;
+}
+
+.capability-card p {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text);
+  margin: 0;
+}
+
+/* === Process Steps === */
+.section-process {
+  padding-block: var(--sp-12);
+  border-top: 1px solid var(--border);
+}
+
+.process-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .process-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.process-card {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0 var(--shadow-pixel);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.process-step-num {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--accent-yellow);
+}
+
+.process-card h3 {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.process-card p {
+  font-size: var(--fs-body-sm);
+  color: var(--muted);
+  line-height: var(--lh-body-sm);
+}
+
+/* === Freelance Direct Contact & Cross Links === */
+.section-freelance-contact {
+  padding-block: var(--sp-12) var(--sp-16);
+  border-top: 1px solid var(--border);
+}
+
+.freelance-contact-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--accent-yellow);
+}
+
+.freelance-contact-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.freelance-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 16px;
+  margin-top: 8px;
+}
+
+.freelance-footer-links a {
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-chip);
+  text-transform: uppercase;
+}
+
+.freelance-footer-links a:hover {
+  color: var(--accent-yellow);
+}
+
+@media print {
+  .service-card,
+  .capability-card,
+  .process-card {
+    page-break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
+

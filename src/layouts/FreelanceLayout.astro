@@ -1,0 +1,218 @@
+---
+import { SITE } from '../data/site';
+import { FREELANCE_META } from '../data/freelance';
+import Icon from '../components/Icon.astro';
+import ToastContainer from '../components/ToastContainer.astro';
+
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import '../styles/freelance.css';
+import '../styles/motion.css';
+import '../styles/print.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = FREELANCE_META.pageTitle,
+  description = FREELANCE_META.description,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, SITE.url);
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" data-theme="night" data-motion="full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={`${SITE.studio} Freelance`} />
+    <meta property="og:image" content={new URL('/og/default.png', SITE.url).href} />
+    <meta property="og:image:alt" content="Beerkanwar — Freelance Unity & Systems Engineering" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL('/og/default.png', SITE.url).href} />
+    <meta name="theme-color" content="#14172E" />
+
+    <!-- Preload primary fonts (WOFF2) -->
+    <link rel="preload" href="/fonts/Silkscreen-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Inter-Variable.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- FOUC Prevention: reuse saved theme/motion preference across portfolio & freelance -->
+    <script is:inline>
+      (function() {
+        try {
+          var s = JSON.parse(localStorage.getItem('beerstudios_save_v1') || '{}');
+          if (s.theme === 'day' || s.theme === 'night') document.documentElement.dataset.theme = s.theme;
+          else if (s.theme === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.dataset.theme = 'day';
+          if (s.motion === 'reduced') document.documentElement.dataset.motion = 'reduced';
+          else if (s.motion === 'system' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.dataset.motion = 'reduced';
+        } catch(e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="starfield hide-on-print" aria-hidden="true">
+      <div class="starfield-layer"></div>
+    </div>
+
+    <header class="hud hide-on-print" id="top">
+      <a href="#main-content" class="skip-link">Skip to Content</a>
+      <div class="hud-inner">
+        <a href="/freelance/" class="hud-logo" aria-label="Beer Studios Freelance Home">
+          <img src="/logo.png" alt="Beer Studios logo" width="24" height="24" style="border-radius: 4px;" />
+          <span class="hud-logo-wordmark">{SITE.studio}</span>
+          <span class="freelance-hud-logo-tag">Freelance</span>
+        </a>
+
+        <nav class="hud-nav" aria-label="Freelance Navigation">
+          <a href="#services">Services</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#process">Process</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="hud-right">
+          <button
+            type="button"
+            class="hud-btn"
+            id="btn-freelance-theme"
+            aria-label="Toggle day and night theme"
+            aria-pressed="false"
+          >
+            <span class="freelance-theme-dot" aria-hidden="true"></span>
+            <span class="hud-btn-label" id="freelance-theme-label">Theme</span>
+          </button>
+
+          <a href="/" class="hud-btn">
+            <Icon name="folder" size={16} />
+            <span class="hud-btn-label">Portfolio</span>
+          </a>
+
+          <a href={SITE.links.hub} class="hud-btn">
+            <Icon name="external-link" size={16} />
+            <span class="hud-btn-label">Hub</span>
+          </a>
+
+          <a href="#contact" class="hud-btn hud-recruiter-btn">
+            <Icon name="mail" size={16} />
+            <span class="hud-btn-label">Hire Me</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer class="site-footer hide-on-print">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-left">
+            <span>&copy; {currentYear} {SITE.name} · {SITE.studio}</span>
+          </div>
+
+          <div class="footer-center">
+            <span>Scoped Freelance &amp; Contract Engineering</span>
+            <div class="freelance-footer-links">
+              <a href={SITE.links.hub}>Beer Studios Hub</a>
+              <a href="/">Personal Portfolio</a>
+              <a href="/recruiter/">Recruiter Mode</a>
+              <a href="https://beerstudios.org/PrivacyPolicy/Snake/">Privacy Policy</a>
+            </div>
+          </div>
+
+          <div class="footer-right">
+            <div>
+              <a href={`mailto:${SITE.freelanceEmail}`} class="footer-action">
+                <Icon name="mail" size={16} /> {SITE.freelanceEmail}
+              </a>
+            </div>
+            <div>
+              <a href="#top" class="footer-action">
+                <Icon name="arrow-up" size={16} /> Back to Top
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Mobile Navigation Bar -->
+    <nav class="bottom-bar hide-on-print" aria-label="Mobile Navigation">
+      <a href="#services" class="bottom-bar-item">
+        <Icon name="controller" size={24} />
+        <span>Services</span>
+      </a>
+      <a href="#capabilities" class="bottom-bar-item">
+        <Icon name="gear" size={24} />
+        <span>Scope</span>
+      </a>
+      <a href="#contact" class="bottom-bar-item">
+        <Icon name="mail" size={24} />
+        <span>Contact</span>
+      </a>
+      <a href="/" class="bottom-bar-item">
+        <Icon name="folder" size={24} />
+        <span>Portfolio</span>
+      </a>
+      <a href={SITE.links.hub} class="bottom-bar-item">
+        <Icon name="external-link" size={24} />
+        <span>Hub</span>
+      </a>
+    </nav>
+
+    <ToastContainer />
+
+    <script is:inline>
+      (function() {
+        var btn = document.getElementById('btn-freelance-theme');
+        var label = document.getElementById('freelance-theme-label');
+
+        function syncLabel() {
+          var current = document.documentElement.dataset.theme === 'day' ? 'day' : 'night';
+          if (label) label.textContent = current === 'day' ? 'Day' : 'Night';
+          if (btn) btn.setAttribute('aria-pressed', (current === 'day').toString());
+        }
+
+        syncLabel();
+
+        if (btn) {
+          btn.addEventListener('click', function() {
+            var next = document.documentElement.dataset.theme === 'day' ? 'night' : 'day';
+            document.documentElement.dataset.theme = next;
+            syncLabel();
+            try {
+              var saved = JSON.parse(localStorage.getItem('beerstudios_save_v1') || '{}');
+              saved.theme = next;
+              localStorage.setItem('beerstudios_save_v1', JSON.stringify(saved));
+            } catch (e) {}
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+

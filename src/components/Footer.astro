@@ -19,6 +19,12 @@ const currentYear = new Date().getFullYear();
       <div class="footer-center">
         <span>Built with Astro & Vanilla CSS</span><br/>
         <span class="text-muted" style="font-size: 12px;">No Tailwind. No UI frameworks. No bloat.</span>
+
+        <div class="footer-cross-links">
+          <a href={SITE.links.hub}>Beer Studios Hub</a>
+          <span aria-hidden="true">&middot;</span>
+          <a href={SITE.links.freelance}>Freelance</a>
+        </div>
         
         <div id="bonus-reveal-container" hidden>
           <a href="/bonus-stage/" class="bonus-link">Enter Bonus Stage</a>

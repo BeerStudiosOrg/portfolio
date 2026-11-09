@@ -8,6 +8,7 @@ export const SITE = {
   tagline: 'I build games — and the systems behind them.',
   metaLine: 'B.Tech CSE · NIT Jalandhar · Unity · Backend · ML',
   email: 'beer14246@gmail.com',
+  freelanceEmail: 'contact@beerstudios.org',
   location: 'Punjab, India',
   education: {
     degree: 'B.Tech in Computer Science & Engineering',
@@ -20,6 +21,8 @@ export const SITE = {
   languages: 'English, Hindi, Punjabi',
   responseTime: 'Usually responds within 48 hours',
   links: {
+    hub: 'https://beerstudios.org/',
+    freelance: '/freelance/',
     github: 'https://github.com/Beerkanwar',
     linkedin: 'https://www.linkedin.com/in/beerkanwar-singh-627836285/',
     itch: 'https://beer-23.itch.io',

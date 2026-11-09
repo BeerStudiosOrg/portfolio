@@ -1,0 +1,341 @@
+---
+import FreelanceLayout from '../../layouts/FreelanceLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { SITE } from '../../data/site';
+import {
+  FREELANCE_META,
+  SERVICE_MODULES,
+  FREELANCE_CAPABILITIES,
+  ENGAGEMENT_STEPS,
+} from '../../data/freelance';
+
+const generalMailto = `mailto:${SITE.freelanceEmail}?subject=${encodeURIComponent('Freelance Contract Inquiry — Beer Studios')}&body=${encodeURIComponent('Hi Beerkanwar,\n\nI would like to discuss a freelance / contract engagement.\n\nProject details:\n- Engine / Tech Stack:\n- Scope / Problem to Solve:\n- Target Timeline:\n\nLooking forward to connecting!')}`;
+---
+
+<FreelanceLayout title={FREELANCE_META.pageTitle} description={FREELANCE_META.description}>
+  <!-- Hero -->
+  <section class="freelance-hero">
+    <div class="container">
+      <div class="freelance-hero-inner">
+        <div class="services-status-badge">
+          <span class="services-pulse" aria-hidden="true"></span>
+          <span>Available for Contracts · {FREELANCE_META.availability}</span>
+        </div>
+
+        <h1 class="freelance-hero-title">Scoped Unity &amp; Systems Engineering</h1>
+
+        <p class="freelance-hero-lead">
+          Dedicated contract development for indie studios, game teams, and technical founders.
+          I ship decoupled C# gameplay modules, custom 2D/3D kinematics, server-authoritative
+          Unity Netcode (NGO), ML-Agents gyms, and WebGL/Phaser optimization fixes with clean Git PRs.
+        </p>
+
+        <div class="freelance-hero-actions">
+          <a href="#services" class="btn btn-primary">
+            <Icon name="controller" size={16} /> View Service Modules
+          </a>
+          <a href={generalMailto} class="btn btn-secondary">
+            <Icon name="mail" size={16} /> Request a Custom Quote
+          </a>
+          <a href="/" class="btn btn-tertiary">
+            Explore Personal Portfolio &rarr;
+          </a>
+        </div>
+
+        <div class="services-meta-strip">
+          <div><strong>Availability:</strong> {FREELANCE_META.availability}</div>
+          <div><strong>Milestones:</strong> {FREELANCE_META.milestones}</div>
+          <div><strong>Retainers:</strong> {FREELANCE_META.retainers}</div>
+          <div><strong>Delivery:</strong> {FREELANCE_META.delivery}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Modules Grid -->
+  <section class="section-services" id="services" aria-label="Freelance Service Modules">
+    <div class="container">
+      <div class="services-header">
+        <p class="eyebrow">Modular Scopes</p>
+        <h2 class="section-title">Engineering Service Modules</h2>
+        <p class="section-desc" style="margin-inline: 0;">
+          Self-contained systems built under strict constraints and backed by verifiable case files from shipped projects. Pricing is quoted per scope after reviewing your codebase and requirements.
+        </p>
+      </div>
+
+      <div class="filter-bar hide-on-print" aria-label="Service category filter">
+        <div class="filter-tabs" role="group" aria-label="Filter service modules">
+          <button type="button" aria-pressed="true" data-service-filter="all" class="filter-chip">
+            <Icon name="folder" size={16} /> All Services
+          </button>
+          <button type="button" aria-pressed="false" data-service-filter="gameplay" class="filter-chip">
+            <Icon name="controller" size={16} /> Gameplay Modules
+          </button>
+          <button type="button" aria-pressed="false" data-service-filter="systems" class="filter-chip">
+            <Icon name="gear" size={16} /> Systems &amp; Netcode
+          </button>
+        </div>
+      </div>
+
+      <div class="services-grid" id="service-cards-grid">
+        {SERVICE_MODULES.map((mod) => {
+          const mailtoHref = `mailto:${SITE.freelanceEmail}?subject=${encodeURIComponent(mod.inquirySubject)}&body=${encodeURIComponent(`Hi Beerkanwar,\n\nI'd like to inquire about the "${mod.title}" service module.\n\nProject details:\n- Game Engine / Version:\n- Description of scope:\n- Desired timeline:\n\nLooking forward to hearing from you!`)}`;
+
+          return (
+            <article class="service-card" data-track={mod.track} id={mod.id}>
+              <div class="service-card-top">
+                <span class="service-code">{mod.code}</span>
+                <span class="service-track-tag">
+                  {mod.track === 'gameplay' ? 'Gameplay Track' : 'Systems Track'}
+                </span>
+              </div>
+
+              <h3 class="service-card-title">{mod.title}</h3>
+              <div class="service-card-tagline">{mod.tagline}</div>
+              <p class="service-card-hook">{mod.hook}</p>
+
+              <div class="service-deliverables-title">Scope &amp; Core Deliverables:</div>
+              <ul class="service-deliverables-list">
+                {mod.deliverables.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+
+              <div class="service-proof-section">
+                <div class="service-proof-title">
+                  <Icon name="check" size={16} />
+                  <span>Verified in Production / Case Files:</span>
+                </div>
+                <div class="service-proof-links">
+                  {mod.proofLinks.map((proof) => (
+                    <a href={proof.href} class="service-proof-link">
+                      <span>{proof.label}</span>
+                      <span class="service-proof-file">{proof.sublabel} &rarr;</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div class="service-card-footer">
+                <div class="service-scope-meta">
+                  <span>{mod.turnaround}</span>
+                  <strong>{mod.pricingNote}</strong>
+                </div>
+                <div class="service-card-actions">
+                  <a href={mailtoHref} class="btn btn-primary btn-sm">
+                    <Icon name="mail" size={16} /> Inquire Module
+                  </a>
+                  <a href={mod.proofLinks[0].href} class="btn btn-secondary btn-sm">
+                    Proof Case File
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Capabilities & Engagement Models -->
+  <section class="section-capabilities" id="capabilities" aria-label="Technical Capabilities">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Contract Scope</p>
+        <h2 class="section-title">Capabilities &amp; Engagement Models</h2>
+        <p class="section-desc" style="margin-inline: 0;">
+          Every deliverable prioritizes deterministic behavior, readable abstractions, and zero-leak resource lifecycle management.
+        </p>
+      </div>
+
+      <div class="capabilities-grid">
+        {FREELANCE_CAPABILITIES.map((cap) => (
+          <div class="capability-card" data-track={cap.track}>
+            <h3>{cap.title}</h3>
+            <p>{cap.summary}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section-process" id="process" aria-label="How Engagements Work">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Workflow</p>
+        <h2 class="section-title">How Contracts Run</h2>
+      </div>
+
+      <div class="process-grid">
+        {ENGAGEMENT_STEPS.map((item) => (
+          <div class="process-card">
+            <div class="process-step-num">{item.step}</div>
+            <h3>{item.title}</h3>
+            <p>{item.detail}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Direct Contract Inquiry -->
+  <section class="section-freelance-contact" id="contact" aria-label="Freelance Contact">
+    <div class="container container--sm">
+      <div class="contact-card pixel-box">
+        <div class="freelance-contact-header">
+          <Icon name="mail" size={32} />
+          <h2>Start a Contract</h2>
+        </div>
+
+        <p class="contact-desc">
+          Share your engine version, target feature or bottleneck, and timeline. Custom scope quotes are provided promptly after reviewing requirements.
+        </p>
+
+        <div class="contact-email-wrapper">
+          <input
+            type="text"
+            id="freelance-email-input"
+            class="contact-input"
+            value={SITE.freelanceEmail}
+            readonly
+            aria-label="Freelance contact email address"
+          />
+          <button
+            type="button"
+            id="btn-copy-freelance-email"
+            class="btn btn-primary"
+            title="Copy email to clipboard"
+          >
+            <Icon name="copy" size={16} /> Copy
+          </button>
+        </div>
+
+        <div class="freelance-contact-actions hide-on-print">
+          <a href={generalMailto} class="btn btn-secondary">
+            <Icon name="mail" size={16} /> Send Email Brief
+          </a>
+          <a href="/" class="btn btn-tertiary">
+            View Full Portfolio &amp; Case Files &rarr;
+          </a>
+        </div>
+
+        <div class="contact-socials hide-on-print">
+          <a href={SITE.links.github} target="_blank" rel="noopener noreferrer" class="social-link">
+            <Icon name="github" size={16} /> GitHub
+          </a>
+          <a href={SITE.links.linkedin} target="_blank" rel="noopener noreferrer" class="social-link">
+            <Icon name="linkedin" size={16} /> LinkedIn
+          </a>
+          <a href={SITE.links.itch} target="_blank" rel="noopener noreferrer" class="social-link">
+            <Icon name="itch" size={16} /> itch.io
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</FreelanceLayout>
+
+<script is:inline>
+  (function() {
+    function initServiceFilters() {
+      var filterChips = document.querySelectorAll('[data-service-filter]');
+      var cards = document.querySelectorAll('.service-card');
+
+      filterChips.forEach(function(chip) {
+        chip.addEventListener('click', function() {
+          var filter = chip.getAttribute('data-service-filter') || 'all';
+          filterChips.forEach(function(c) {
+            c.setAttribute('aria-pressed', (c.getAttribute('data-service-filter') === filter).toString());
+          });
+
+          cards.forEach(function(card) {
+            var track = card.getAttribute('data-track');
+            card.style.display = (filter === 'all' || track === filter) ? '' : 'none';
+          });
+        });
+      });
+    }
+
+    function showToast(title, desc) {
+      var container = document.getElementById('toast-container');
+      if (!container) return;
+      var toast = document.createElement('div');
+      toast.className = 'toast toast-enter';
+
+      var iconEl = document.createElement('div');
+      iconEl.className = 'toast-icon';
+      iconEl.textContent = '✓';
+
+      var contentEl = document.createElement('div');
+      contentEl.className = 'toast-content';
+
+      var titleEl = document.createElement('div');
+      titleEl.className = 'toast-title';
+      titleEl.textContent = title;
+
+      var descEl = document.createElement('div');
+      descEl.className = 'toast-desc';
+      descEl.textContent = desc;
+
+      contentEl.appendChild(titleEl);
+      contentEl.appendChild(descEl);
+      toast.appendChild(iconEl);
+      toast.appendChild(contentEl);
+      container.appendChild(toast);
+
+      setTimeout(function() {
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(function() {
+          if (container.contains(toast)) container.removeChild(toast);
+        }, 250);
+      }, 3200);
+    }
+
+    function initCopyEmail() {
+      var copyBtn = document.getElementById('btn-copy-freelance-email');
+      var emailInput = document.getElementById('freelance-email-input');
+      if (!copyBtn || !emailInput) return;
+
+      var originalHtml = copyBtn.innerHTML;
+      var resetTimer = null;
+
+      function setCopied() {
+        copyBtn.textContent = '✓ Copied!';
+        showToast('Email Copied', emailInput.value);
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function() {
+          copyBtn.innerHTML = originalHtml;
+        }, 2000);
+      }
+
+      function selectFallback(text) {
+        emailInput.focus();
+        emailInput.select();
+        showToast('Select & Copy', 'Press Ctrl+C to copy ' + text);
+      }
+
+      copyBtn.addEventListener('click', function() {
+        var text = emailInput.value;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(setCopied).catch(function() {
+            selectFallback(text);
+          });
+        } else {
+          selectFallback(text);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        initServiceFilters();
+        initCopyEmail();
+      });
+    } else {
+      initServiceFilters();
+      initCopyEmail();
+    }
+  })();
+</script>

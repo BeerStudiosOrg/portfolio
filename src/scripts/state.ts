@@ -168,9 +168,9 @@ class StateManager {
     }
 
     // Grid filters
-    document.querySelectorAll<HTMLButtonElement>('.filter-chip').forEach(tab => {
+    document.querySelectorAll<HTMLButtonElement>('#levels .filter-chip').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.filter-chip').forEach(t => {
+        document.querySelectorAll('#levels .filter-chip').forEach(t => {
           t.setAttribute('aria-pressed', 'false');
         });
         tab.setAttribute('aria-pressed', 'true');
@@ -304,7 +304,7 @@ class StateManager {
       this.filterGridByClass();
     }
 
-    // Notify commission board and other components of class change
+    // Notify components of class change
     window.dispatchEvent(new CustomEvent('player-class-changed', { 
       detail: { playerClass: this.state.playerClass } 
     }));
