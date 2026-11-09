@@ -1,0 +1,18 @@
+---
+interface Props {
+  id: number;
+  locationHint: string;
+}
+
+const { id, locationHint } = Astro.props;
+---
+
+<button 
+  type="button" 
+  class="pixel-coin" 
+  data-coin-id={id}
+  aria-label={`Collect hidden coin ${id} of 7`}
+  title={locationHint}
+>
+  <img src="/media/coin.gif" alt="Coin" class="pixel-coin-sprite" />
+</button>

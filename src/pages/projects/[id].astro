@@ -1,0 +1,260 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Badge from '../../components/Badge.astro';
+import Chip from '../../components/Chip.astro';
+import Gallery from '../../components/Gallery.astro';
+import Icon from '../../components/Icon.astro';
+import Coin from '../../components/Coin.astro';
+import BlueprintPoster from '../../components/BlueprintPoster.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  const totalProjects = projects.length;
+  return projects.map(project => ({
+    params: { id: project.id.replace(/\.md$/, '') },
+    props: { project, totalProjects },
+  }));
+}
+
+const { project, totalProjects } = Astro.props;
+const data = project.data;
+const { Content } = await render(project);
+
+// Resolve public folder safely without relying on process.cwd() (L11)
+const publicDir = fileURLToPath(new URL('../../../public', import.meta.url));
+
+const posterPath = data.media.poster ? path.join(publicDir, data.media.poster) : null;
+const hasPoster = Boolean(posterPath && fs.existsSync(posterPath));
+
+const clipWebmPath = data.media.clipWebm ? path.join(publicDir, data.media.clipWebm) : null;
+const clipMp4Path = data.media.clipMp4 ? path.join(publicDir, data.media.clipMp4) : null;
+const hasVideo = Boolean(clipWebmPath && clipMp4Path && fs.existsSync(clipWebmPath) && fs.existsSync(clipMp4Path));
+
+// Only render architecture SVG if the file exists on disk (H3)
+const archSvgPath = data.media.architectureSvgId 
+  ? path.join(publicDir, 'media', 'projects', `${data.media.architectureSvgId}.svg`) 
+  : null;
+const hasArchSvg = Boolean(archSvgPath && fs.existsSync(archSvgPath));
+
+// Only include gallery images that actually exist on disk to prevent 404s (M4)
+const validGallery = (data.media.gallery || []).filter(item => {
+  if (!item.src) return false;
+  const absPath = path.join(publicDir, item.src);
+  return fs.existsSync(absPath);
+});
+---
+
+<BaseLayout title={`${data.title} | Case File`}>
+  <div class="case-file-wrapper">
+    <div style="padding-inline: var(--container-px);">
+      <div class="case-file-nav">
+        <a href="/#levels" class="btn btn-secondary">&larr; Back to Base</a>
+      </div>
+      
+      <article class="case-file" data-total-projects={totalProjects}>
+        <header class="case-header">
+          <div class="case-meta-top">
+            <span class="case-stage">STAGE {data.canonicalStage}</span>
+            <div class="card-badges">
+              {data.statuses.map(s => <Badge status={s} />)}
+            </div>
+          </div>
+          
+          <h1 class="case-title">{data.title}</h1>
+          
+          <div class="case-grid-meta">
+            <div class="case-meta-item">
+              <span class="meta-label">Role</span>
+              <span class="meta-value">{data.role}</span>
+            </div>
+            <div class="case-meta-item">
+              <span class="meta-label">Timeline</span>
+              <span class="meta-value">{data.timeline}</span>
+            </div>
+            <div class="case-meta-item">
+              <span class="meta-label">Platform</span>
+              <span class="meta-value">{data.platform}</span>
+            </div>
+            <div class="case-meta-item">
+              <span class="meta-label">Team Size</span>
+              <span class="meta-value">{data.teamSize}</span>
+            </div>
+          </div>
+          
+          <div class="card-chips case-chips">
+            {data.stack.map(tech => <Chip text={tech} />)}
+          </div>
+          
+          <div class="case-actions">
+            {data.links.repo && <a href={data.links.repo} class="btn btn-primary" target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} /> Source Code</a>}
+            {data.links.playStore && <a href={data.links.playStore} class="btn btn-secondary" target="_blank" rel="noopener noreferrer"><Icon name="google-play" size={16} /> Google Play</a>}
+            {data.links.itch && !data.links.itchEmbedUrl && <a href={data.links.itch} class="btn btn-secondary" target="_blank" rel="noopener noreferrer"><Icon name="itch" size={16} /> Play on itch.io</a>}
+          </div>
+        </header>
+
+        <!-- Media Hero -->
+        <div class="case-media-hero">
+          {data.links.itchEmbedUrl ? (
+            <div class="embed-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+              <iframe src={data.links.itchEmbedUrl} style="border: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" allowfullscreen></iframe>
+            </div>
+            <div style="text-align: center; padding: 8px;">
+              <a href={data.links.itch} target="_blank" rel="noopener noreferrer">Play on itch.io</a>
+            </div>
+          ) : hasPoster ? (
+            hasVideo ? (
+              <video class="case-video-full" autoplay loop muted playsinline poster={data.media.poster}>
+                <source src={data.media.clipWebm} type="video/webm" />
+                <source src={data.media.clipMp4} type="video/mp4" />
+              </video>
+            ) : (
+              <img src={data.media.poster} alt={`Hero screenshot of ${data.title}`} class="case-img-full" />
+            )
+          ) : (
+            <BlueprintPoster title={data.title} stage={data.canonicalStage} track={data.track} stack={data.stack} />
+          )}
+        </div>
+
+        <div class="case-content">
+          <section class="case-section">
+            <h2>Mission Brief</h2>
+            <p>{data.mission}</p>
+          </section>
+
+          <section class="case-section">
+            <h2>Key Systems Engineered</h2>
+            <div class="key-systems-grid">
+              {data.keySystems.map(sys => (
+                <div class="key-system-card">
+                  <h3 class="key-system-title">{sys.title}</h3>
+                  <p class="key-system-detail">{sys.detail}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          
+          {data.bossFight && (
+            <section class="case-section boss-fight-section">
+              <div class="boss-fight-header">
+                <Icon name="bolt" size={24} />
+                <h2>Boss Fight: {data.bossFight.title}</h2>
+              </div>
+              <p>{data.bossFight.detail}</p>
+            </section>
+          )}
+
+          {data.scopeNote && (
+            <section class="case-section scope-note-section">
+              <div class="scope-note-header">
+                <Icon name="gear" size={24} />
+                <h2>Scope Discipline Note</h2>
+              </div>
+              <p><strong>Base Template:</strong> {data.scopeNote.baseName}</p>
+              
+              <div class="scope-grid">
+                <div class="scope-col">
+                  <h4>Provided by Base:</h4>
+                  <ul>
+                    {data.scopeNote.providedByBase.map(item => <li>{item}</li>)}
+                  </ul>
+                </div>
+                <div class="scope-col">
+                  <h4>Engineered by Me:</h4>
+                  <ul>
+                    {data.scopeNote.builtByMe.map(item => <li>{item}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          )}
+
+          <section class="case-section">
+            <h2>Implementation Details</h2>
+            
+            {hasArchSvg && (
+              <div style="margin-bottom: 2rem; border: 1px solid var(--border); padding: 1rem; background: var(--bg-deep);">
+                <img src={`/media/projects/${data.media.architectureSvgId}.svg`} alt="Architecture Diagram" style="width: 100%; height: auto;" />
+              </div>
+            )}
+            
+            <div class="prose">
+              <Content />
+            </div>
+          </section>
+
+          {data.controlsText && (
+            <section class="case-section">
+              <h2>Controls</h2>
+              <p>{data.controlsText}</p>
+            </section>
+          )}
+
+          {validGallery.length > 0 && (
+            <section class="case-section">
+              <h2>Media Gallery</h2>
+              <Gallery images={validGallery} />
+            </section>
+          )}
+          
+          {data.loot && data.loot.length > 0 && (
+            <section class="case-section loot-section">
+              <h2>Loot & Rewards</h2>
+              <ul>
+                {data.loot.map(item => <li>{item}</li>)}
+              </ul>
+            </section>
+          )}
+
+          {data.relatedProject && (
+            <section class="case-section related-project-section">
+              <h2>Related Project</h2>
+              <a href={`/projects/${data.relatedProject.slug.replace(/\.md$/, '')}`} class="btn btn-secondary">
+                View {data.relatedProject.title}
+              </a>
+            </section>
+          )}
+        </div>
+      </article>
+      
+      <div class="case-file-footer">
+        {project.id.replace(/\.md$/, '') === 'resource-hub' && <Coin id={7} locationHint="End of Resource Hub Case File" />}
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    setTimeout(() => {
+      const id = window.location.pathname.split('/').filter(Boolean).pop();
+      if (!id) return;
+      let viewed = [];
+      try {
+        viewed = JSON.parse(localStorage.getItem('beerstudios_viewed_projects') || '[]');
+      } catch(e) {}
+      
+      let isNew = false;
+      if (!viewed.includes(id)) {
+        viewed.push(id);
+        try {
+          localStorage.setItem('beerstudios_viewed_projects', JSON.stringify(viewed));
+        } catch(e) {}
+        isNew = true;
+      }
+      
+      // Fire level-up if this is the first one
+      if (viewed.length === 1 && isNew) {
+        window.dispatchEvent(new CustomEvent('achievement-unlocked', { detail: { id: 'level-up' } }));
+      }
+      
+      // Fire completionist if all projects are viewed (M8)
+      const caseFileEl = document.querySelector('.case-file');
+      const totalProjects = parseInt(caseFileEl ? caseFileEl.getAttribute('data-total-projects') : '13', 10);
+      if (viewed.length >= totalProjects && isNew) {
+        window.dispatchEvent(new CustomEvent('achievement-unlocked', { detail: { id: 'completionist' } }));
+      }
+    }, 500);
+  </script>
+</BaseLayout>

@@ -1,0 +1,244 @@
+import { ACHIEVEMENTS } from '../data/achievements';
+import { SITE } from '../data/site';
+
+class AchievementManager {
+  private unlockedIds: Set<string> = new Set();
+  private collectedCoins: Set<number> = new Set();
+  private toastContainer: HTMLElement | null = null;
+  private totalAchievements = ACHIEVEMENTS.length;
+
+  constructor() {
+    this.loadState();
+    this.bindEvents();
+    
+    // Initial setup
+    this.toastContainer = document.getElementById('toast-container');
+    this.rebindDOM();
+    this.updateUI();
+  }
+
+  private rebindDOM() {
+    // Coin clicks (using event delegation to avoid double binding is safer, 
+    // but here we just safely bind if not bound)
+    document.querySelectorAll('.pixel-coin').forEach(coinEl => {
+      const btn = coinEl as HTMLButtonElement;
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = 'true';
+      btn.addEventListener('click', () => {
+        const coinId = parseInt(btn.dataset.coinId || '0');
+        if (coinId && !this.collectedCoins.has(coinId)) {
+          this.collectedCoins.add(coinId);
+          btn.classList.add('is-collected');
+          btn.setAttribute('aria-label', 'Coin Collected');
+          
+          if ((window as any).SoundManager) {
+            (window as any).SoundManager.play('coin');
+          }
+          
+          btn.classList.add('is-hidden');
+          this.saveState();
+          this.updateUI();
+          this.checkCoinAchievements();
+        }
+      });
+    });
+
+    // Email copy (M12)
+    const copyBtn = document.getElementById('btn-copy-email');
+    if (copyBtn && !copyBtn.dataset.bound) {
+      copyBtn.dataset.bound = 'true';
+      const originalHtml = copyBtn.innerHTML;
+      let resetTimer: any = null;
+
+      const setCopiedState = () => {
+        this.unlock('hello-world');
+        copyBtn.innerHTML = '✓ Copied!';
+        copyBtn.classList.add('is-copied');
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          copyBtn.innerHTML = originalHtml;
+          copyBtn.classList.remove('is-copied');
+        }, 2000);
+      };
+
+      const setErrorState = () => {
+        copyBtn.innerHTML = '✗ Copy failed';
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          copyBtn.innerHTML = originalHtml;
+        }, 2000);
+      };
+
+      copyBtn.addEventListener('click', () => {
+        const emailInput = document.getElementById('contact-email-input') as HTMLInputElement;
+        const textToCopy = emailInput ? emailInput.value : SITE.email;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy)
+            .then(setCopiedState)
+            .catch(() => {
+              if (emailInput) {
+                emailInput.select();
+                try {
+                  const success = document.execCommand('copy');
+                  if (success) setCopiedState();
+                  else setErrorState();
+                } catch {
+                  setErrorState();
+                }
+              } else {
+                setErrorState();
+              }
+            });
+        } else if (emailInput) {
+          emailInput.select();
+          try {
+            const success = document.execCommand('copy');
+            if (success) setCopiedState();
+            else setErrorState();
+          } catch {
+            setErrorState();
+          }
+        } else {
+          setErrorState();
+        }
+      });
+    }
+  }
+
+  private loadState() {
+    try {
+      const saved = localStorage.getItem('beerstudios_achievements_v1');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (Array.isArray(data.unlockedIds)) this.unlockedIds = new Set(data.unlockedIds);
+        if (Array.isArray(data.collectedCoins)) this.collectedCoins = new Set(data.collectedCoins);
+      }
+    } catch (e) {}
+  }
+
+  private saveState() {
+    try {
+      localStorage.setItem('beerstudios_achievements_v1', JSON.stringify({
+        unlockedIds: Array.from(this.unlockedIds),
+        collectedCoins: Array.from(this.collectedCoins)
+      }));
+    } catch (e) {}
+  }
+
+  private bindEvents() {
+    // Custom event listener for arbitrary unlocks
+    window.addEventListener('achievement-unlocked', ((e: CustomEvent) => {
+      this.unlock(e.detail.id);
+    }) as EventListener);
+  }
+
+  private checkCoinAchievements() {
+    const count = this.collectedCoins.size;
+    if (count >= 7) {
+      this.unlock('coin-collector');
+      const bonusContainer = document.getElementById('bonus-reveal-container');
+      if (bonusContainer) bonusContainer.hidden = false;
+    }
+  }
+
+  public unlock(id: string) {
+    if (this.unlockedIds.has(id)) return;
+    
+    const achievementDef = ACHIEVEMENTS.find(a => a.id === id);
+    if (!achievementDef) return;
+
+    this.unlockedIds.add(id);
+    this.saveState();
+    this.updateUI();
+    this.showToast(achievementDef);
+
+    if ((window as any).SoundManager) {
+      (window as any).SoundManager.play('success');
+    }
+  }
+
+  private showToast(achievement: typeof ACHIEVEMENTS[0]) {
+    this.toastContainer = document.getElementById('toast-container');
+    if (!this.toastContainer) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <div class="toast-icon">🏆</div>
+      <div class="toast-content">
+        <div class="toast-title">Achievement Unlocked!</div>
+        <div class="toast-desc">${achievement.title}</div>
+      </div>
+    `;
+    
+    this.toastContainer.appendChild(toast);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      toast.style.transform = 'translateX(0)';
+    });
+
+    // Remove after 4s
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        if (this.toastContainer?.contains(toast)) {
+          this.toastContainer.removeChild(toast);
+        }
+      }, 300);
+    }, 4000);
+  }
+
+  private updateUI() {
+    const counter = document.getElementById('hud-coin-count');
+    if (counter) {
+      counter.textContent = `${this.collectedCoins.size}/7`;
+    }
+
+    document.querySelectorAll('.pixel-coin').forEach(c => {
+      const id = parseInt((c as HTMLButtonElement).dataset.coinId || '0');
+      if (this.collectedCoins.has(id)) {
+        c.classList.add('is-hidden');
+      }
+    });
+    
+    // HUD XP Bar
+    const xpFill = document.getElementById('xp-fill');
+    if (xpFill) {
+      const percentage = (this.unlockedIds.size / this.totalAchievements) * 100;
+      xpFill.style.width = `${percentage}%`;
+    }
+    const menuXpFill = document.getElementById('menu-xp-fill');
+    if (menuXpFill) {
+      const percentage = (this.unlockedIds.size / this.totalAchievements) * 100;
+      menuXpFill.style.width = `${percentage}%`;
+    }
+
+    // Modal Count
+    const modalCount = document.getElementById('achievement-count-display');
+    if (modalCount) {
+      modalCount.textContent = this.unlockedIds.size.toString();
+    }
+
+    // Modal Cards
+    this.unlockedIds.forEach(id => {
+      const card = document.querySelector(`.achievement-card[data-achievement-id="${id}"]`);
+      if (card) {
+        card.classList.remove('is-locked');
+      }
+    });
+
+    // Sync coins in DOM
+    this.collectedCoins.forEach(id => {
+      const coin = document.querySelector(`.pixel-coin[data-coin-id="${id}"]`);
+      if (coin) {
+        coin.classList.add('is-collected');
+        coin.setAttribute('aria-label', 'Coin Collected');
+      }
+    });
+  }
+}
+
+export const achievementManager = new AchievementManager();

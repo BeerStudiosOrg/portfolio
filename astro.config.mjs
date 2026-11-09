@@ -1,0 +1,16 @@
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+
+export default defineConfig({
+  site: 'https://portfolio.beerstudios.org',
+  output: 'static',
+  trailingSlash: 'always',
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/bonus-stage') && !page.includes('/recruiter'),
+    }),
+  ],
+  build: {
+    assets: '_astro',
+  },
+});
